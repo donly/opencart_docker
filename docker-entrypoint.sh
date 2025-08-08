@@ -50,9 +50,9 @@ fi
 
 # 设置文件权限
 chown -R www-data:www-data /var/www/html
+chown -R www-data:www-data /var/www/storage
 chmod -R 755 /var/www/html
-chmod -R 777 /var/www/html/storage
-chmod -R 777 /var/www/html/system/storage
+chmod -R 777 /var/www/storage
 
 echo "OpenCart启动完成！"
 

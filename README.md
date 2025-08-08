@@ -39,11 +39,30 @@ docker-compose ps
 docker-compose logs -f
 ```
 
-### 3. 访问OpenCart
+### 3. 创建配置文件（重要！）
+OpenCart安装向导需要配置文件才能继续。运行以下命令：
+
+```bash
+# 进入PHP容器
+docker-compose exec opencart bash
+
+# 创建配置文件
+cp /var/www/html/config-dist.php /var/www/html/config.php
+cp /var/www/html/admin/config-dist.php /var/www/html/admin/config.php
+
+# 设置正确的权限
+chown www-data:www-data /var/www/html/config.php /var/www/html/admin/config.php
+chmod 666 /var/www/html/config.php /var/www/html/admin/config.php
+
+# 退出容器
+exit
+```
+
+### 4. 访问OpenCart
 - **前台**: http://localhost
 - **管理后台**: http://localhost/admin
 
-### 4. 数据库配置
+### 5. 数据库配置
 在OpenCart安装向导中使用以下数据库信息：
 - **数据库主机**: mariadb
 - **数据库名**: opencart
@@ -95,11 +114,20 @@ docker-compose exec mariadb mysqldump -u root -p opencart > backup.sql
 
 # 恢复数据库
 docker-compose exec -T mariadb mysql -u root -p opencart < backup.sql
+
+# 创建配置文件（如果安装向导提示缺失）
+docker-compose exec opencart bash -c "
+cp /var/www/html/config-dist.php /var/www/html/config.php &&
+cp /var/www/html/admin/config-dist.php /var/www/html/admin/config.php &&
+chown www-data:www-data /var/www/html/config.php /var/www/html/admin/config.php &&
+chmod 666 /var/www/html/config.php /var/www/html/admin/config.php
+"
 ```
 
 ## 数据持久化
 - 数据库数据: `mariadb_data` 卷
 - OpenCart文件: `opencart_data` 卷
+- Storage数据: `storage_data` 卷
 
 ## 安全建议
 1. 修改默认密码
@@ -133,7 +161,18 @@ docker-compose exec opencart ping mariadb
 # 修复权限
 docker-compose exec opencart chown -R www-data:www-data /var/www/html
 docker-compose exec opencart chmod -R 755 /var/www/html
-docker-compose exec opencart chmod -R 777 /var/www/html/storage
+docker-compose exec opencart chmod -R 777 /var/www/storage
+```
+
+### 4. 配置文件缺失
+```bash
+# 创建配置文件
+docker-compose exec opencart bash -c "
+cp /var/www/html/config-dist.php /var/www/html/config.php &&
+cp /var/www/html/admin/config-dist.php /var/www/html/admin/config.php &&
+chown www-data:www-data /var/www/html/config.php /var/www/html/admin/config.php &&
+chmod 666 /var/www/html/config.php /var/www/html/admin/config.php
+"
 ```
 
 ## 性能优化

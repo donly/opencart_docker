@@ -30,35 +30,16 @@ fi
 echo "复制文件到web目录..."
 cp -r $OPENCART_DIR/* /var/www/html/
 
-# 创建storage目录结构
+# 创建storage目录结构（移到web目录外面）
 echo "创建storage目录..."
-mkdir -p /var/www/html/storage/{cache,logs,modification,session,upload}
+mkdir -p /var/www/storage/{cache,logs,modification,session,upload}
 
 # 设置权限
 echo "设置文件权限..."
 chown -R www-data:www-data /var/www/html
+chown -R www-data:www-data /var/www/storage
 chmod -R 755 /var/www/html
-chmod -R 777 /var/www/html/storage
-chmod -R 777 /var/www/html/system/storage
-
-# 创建基本的配置文件模板（OpenCart 4.x需要）
-echo "创建配置文件模板..."
-cat > /var/www/html/config.php << 'EOF'
-<?php
-// OpenCart 4.x 基本配置文件
-// 此文件将在安装向导中自动更新
-EOF
-
-cat > /var/www/html/admin/config.php << 'EOF'
-<?php
-// OpenCart 4.x 管理后台基本配置文件
-// 此文件将在安装向导中自动更新
-EOF
-
-# 设置配置文件权限，确保安装向导可以写入
-echo "设置配置文件权限..."
-chown www-data:www-data /var/www/html/config.php /var/www/html/admin/config.php
-chmod 666 /var/www/html/config.php /var/www/html/admin/config.php
+chmod -R 777 /var/www/storage
 
 echo "OpenCart文件安装完成！"
 echo "请访问 http://localhost 进行安装配置"
